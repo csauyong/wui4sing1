@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# IDEs
+.idea/
+.vscode/
+
+# Claude Code local state
+.claude/settings.local.json
+
+# Node / tool artifacts
+node_modules/
+*.log
+
+# Build output (if any)
+dist/
+build/
