@@ -486,17 +486,20 @@
       0 2px 0 rgba(176,118,55,0.12);
     padding:6%;
     border-radius:6px;
-    overflow:hidden;
+    /* overflow visible so the tonearm counterweight isn't clipped when the arm rotates */
+    overflow:visible;
   }
   /* wood-grain / grain overlay on plinth */
   .tt-plinth::before{
     content:"";position:absolute;inset:0;pointer-events:none;
+    border-radius:inherit;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.018 0.9' numOctaves='2' seed='6'/><feColorMatrix values='0 0 0 0 0.36  0 0 0 0 0.26  0 0 0 0 0.12  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23w)'/></svg>");
     mix-blend-mode:multiply;
     opacity:0.65;
   }
   .tt-plinth::after{
     content:"";position:absolute;inset:0;pointer-events:none;
+    border-radius:inherit;
     background:radial-gradient(120% 80% at 50% 110%, rgba(36,37,28,0.25), transparent 55%);
   }
 
@@ -565,6 +568,20 @@
       0 0 0 1px rgba(255,255,255,0.08),
       0 0 0 6px rgba(0,0,0,0.35),
       0 6px 20px rgba(0,0,0,0.35);
+    will-change: transform, opacity;
+  }
+  /* Record-change animation — label shrinks away, new cover swaps in, label returns */
+  .tt-label[data-changing="on"]{
+    animation: recordSwap 640ms cubic-bezier(.45,.05,.35,1) both;
+  }
+  @keyframes recordSwap{
+    0%   { transform: translate(-50%,-50%) scale(1);    opacity:1; }
+    38%  { transform: translate(-50%,-50%) scale(0.32); opacity:0; }
+    62%  { transform: translate(-50%,-50%) scale(0.32); opacity:0; }
+    100% { transform: translate(-50%,-50%) scale(1);    opacity:1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .tt-label[data-changing="on"]{ animation:none; }
   }
   .tt-cover{
     position:absolute;inset:0;width:100%;height:100%;
@@ -1470,6 +1487,7 @@
   const fallback  = document.querySelector('.tt-cover-fallback');
   const fbChar    = document.querySelector('.tt-cover-fallback .fb-ch');
   const vinyl     = document.querySelector('.tt-vinyl');
+  const label     = document.querySelector('.tt-label');
   const arm       = document.querySelector('.tt-arm');
   const tracksEl  = $('deck-tracks');
   const titleEl   = $('track-title');
@@ -1529,14 +1547,20 @@
     });
   }
 
+  let swapTimers = [];
+  function clearSwapTimers(){
+    swapTimers.forEach(clearTimeout);
+    swapTimers = [];
+  }
+
   function select(i, autoplay){
+    const isInitial = !audio.src;
     current = (i + TRACKS.length) % TRACKS.length;
     const t = TRACKS[current];
     titleEl.textContent = t.title;
     subEl.textContent   = t.subtitle;
     metaEl.textContent  = t.meta;
     idxNow.textContent  = String(current+1).padStart(2,'0');
-    setCover(t);
     lnkSpot.href  = t.links.spotify;
     lnkApple.href = t.links.apple;
     lnkYT.href    = t.links.youtube;
@@ -1547,10 +1571,37 @@
     pbNow.textContent = '0:00';
     pbDur.textContent = '—:—';
 
-    updateActiveChip();
+    // Lift the arm and pause the platter while the record is changed
+    audio.pause();
+    playing = false;
+    btnPlay.dataset.playing = 'false';
+    btnPlay.setAttribute('aria-label','Play');
+    arm.dataset.engaged = 'off';
+    vinyl.dataset.spin = 'off';
 
-    if (autoplay) play();
-    else pause();
+    updateActiveChip();
+    clearSwapTimers();
+
+    if (isInitial){
+      // First render — no animation, just set the cover
+      setCover(t);
+      if (autoplay) play();
+      return;
+    }
+
+    // Retrigger the swap animation even if the attribute was already 'on'
+    label.dataset.changing = 'off';
+    void label.offsetWidth;
+    label.dataset.changing = 'on';
+
+    // Swap the cover while the label is fully scaled-down/invisible
+    swapTimers.push(setTimeout(() => { setCover(t); }, 250));
+
+    // When the label has finished returning, resume playback if requested
+    swapTimers.push(setTimeout(() => {
+      label.dataset.changing = 'off';
+      if (autoplay) play();
+    }, 640));
   }
 
   function play(){
