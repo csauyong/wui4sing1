@@ -604,49 +604,89 @@
   /* Tonearm */
   .tt-arm{
     position:absolute;
-    right:3%; top:3%;
-    width:46%; height:62%;
+    right:4%; top:4%;
+    width:50%; height:55%;
     pointer-events:none;
-    transform-origin: 92% 8%;
-    transform: rotate(-28deg);
+    transform-origin: 90% 10%;
+    transform: rotate(-80deg);
     transition: transform 1.1s cubic-bezier(.5,.1,.3,1);
   }
-  .tt-arm[data-engaged="on"]{ transform: rotate(-6deg); }
+  .tt-arm[data-engaged="on"]{ transform: rotate(-50deg); }
   .tt-arm-base{
-    position:absolute;right:2%;top:2%;
+    position:absolute;
+    left:90%; top:10%;
     width:22%;aspect-ratio:1/1;border-radius:50%;
+    transform:translate(-50%,-50%);
     background:
-      radial-gradient(circle at 30% 30%, #f2e8cf, #c9b88a 60%, #7a6b45);
-    box-shadow:0 0 0 1px rgba(36,37,28,0.35), 0 4px 10px rgba(0,0,0,0.3);
+      radial-gradient(circle at 32% 30%, #F6EDD5, #D7BE85 55%, #8A7141 100%);
+    box-shadow:
+      0 0 0 1px rgba(36,37,28,0.4),
+      0 0 0 4px rgba(36,37,28,0.06),
+      0 6px 14px -4px rgba(0,0,0,0.38);
   }
   .tt-arm-base-inner{
     position:absolute;inset:22%;border-radius:50%;
-    background:radial-gradient(circle at 30% 30%, #3a3530, #0f0e0c);
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);
+    background:radial-gradient(circle at 30% 28%, #4a4238, #120f0c);
+    box-shadow:inset 0 0 0 1px rgba(255,247,220,0.12);
+  }
+  /* counterweight — small cylinder extending past the pivot */
+  .tt-arm-base::after{
+    content:"";
+    position:absolute;
+    left:92%; top:30%;
+    width:55%; height:40%;
+    background:linear-gradient(180deg, #6b5a33 0%, #3a2f18 55%, #5a4826 100%);
+    border:1px solid rgba(36,37,28,0.5);
+    border-radius:3px;
+    box-shadow:0 2px 4px rgba(0,0,0,0.35);
   }
   .tt-arm-rod{
     position:absolute;
-    right:8%; top:9%;
-    width:80%; height:6px;
-    background:linear-gradient(180deg, #EDE2C2, #A99568 50%, #6b5a33);
-    transform-origin: right center;
-    transform: rotate(48deg) translateY(3px);
+    right:10%; top:10%;
+    width:80%; height:5px;
+    background:linear-gradient(180deg, #F2E7CA 0%, #D4C094 30%, #A08757 65%, #5e4c28 100%);
     border-radius:3px;
     box-shadow:0 2px 4px rgba(0,0,0,0.3);
   }
+  /* cartridge / headshell — warm ivory-brass, not black */
   .tt-arm-head{
     position:absolute;
-    left:14%; top:72%;
-    width:22%; height:14%;
-    background:linear-gradient(160deg, #1b1a17, #0a0908);
-    border-radius:4px 4px 8px 8px;
-    box-shadow:0 3px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+    left:-2%;
+    top:50%;
+    width:26%;
+    aspect-ratio: 6 / 5;
+    transform: translateY(-5px);
+    background:
+      linear-gradient(165deg, #F5EAD0 0%, #DEC89A 30%, #A78A52 72%, #5a4826 100%);
+    border:1px solid rgba(36,37,28,0.4);
+    border-radius:3px 3px 9px 9px;
+    box-shadow:
+      0 3px 7px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.55),
+      inset 0 -2px 3px rgba(36,37,28,0.25);
   }
+  /* cartridge face — subtle dark band on the headshell */
+  .tt-arm-head::before{
+    content:"";
+    position:absolute;
+    left:18%; right:18%;
+    bottom:10%;
+    height:22%;
+    background:linear-gradient(180deg, #3a2f18, #1a140a);
+    border-radius:2px;
+    box-shadow:inset 0 1px 0 rgba(255,220,150,0.18);
+  }
+  /* stylus — warm brass taper, visible against black vinyl */
   .tt-arm-head::after{
-    content:"";position:absolute;left:35%;top:100%;
-    width:30%;height:18%;
-    background:linear-gradient(180deg, #4a3a1c, #1a120a);
-    border-radius:0 0 2px 2px;
+    content:"";
+    position:absolute;
+    left:50%; top:100%;
+    transform:translateX(-50%);
+    width:0; height:0;
+    border-left:3.5px solid transparent;
+    border-right:3.5px solid transparent;
+    border-top:11px solid #C9A15B;
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,0.5));
   }
 
   /* decorative strobe corner */
@@ -1217,14 +1257,15 @@
             <div class="tt-arm-base">
               <div class="tt-arm-base-inner"></div>
             </div>
-            <div class="tt-arm-rod"></div>
-            <div class="tt-arm-head"></div>
+            <div class="tt-arm-rod">
+              <div class="tt-arm-head"></div>
+            </div>
           </div>
 
           <!-- Strobe dots decoration -->
           <div class="tt-strobe" aria-hidden="true"></div>
           <div class="tt-brand" aria-hidden="true">
-            <span>— Model</span><span class="num">MMXXV</span>
+            <span>—</span><span class="num">wui4sing1</span>
           </div>
         </div>
       </div>
