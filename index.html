@@ -77,6 +77,7 @@
     display:flex;align-items:center;gap:14px;
   }
   .mast-mark .mark-svg{width:38px;height:auto;display:block}
+  .mast-mark .mark-img{width:44px;height:auto;display:block;filter:invert(1) brightness(0.18);}
   .mast-mark .mark-label{
     font-family:"Instrument Sans",system-ui,sans-serif;
     font-size:11px;letter-spacing:0.28em;text-transform:uppercase;
@@ -486,17 +487,20 @@
       0 2px 0 rgba(176,118,55,0.12);
     padding:6%;
     border-radius:6px;
-    overflow:hidden;
+    /* overflow visible so the tonearm counterweight isn't clipped when the arm rotates */
+    overflow:visible;
   }
   /* wood-grain / grain overlay on plinth */
   .tt-plinth::before{
     content:"";position:absolute;inset:0;pointer-events:none;
+    border-radius:inherit;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.018 0.9' numOctaves='2' seed='6'/><feColorMatrix values='0 0 0 0 0.36  0 0 0 0 0.26  0 0 0 0 0.12  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23w)'/></svg>");
     mix-blend-mode:multiply;
     opacity:0.65;
   }
   .tt-plinth::after{
     content:"";position:absolute;inset:0;pointer-events:none;
+    border-radius:inherit;
     background:radial-gradient(120% 80% at 50% 110%, rgba(36,37,28,0.25), transparent 55%);
   }
 
@@ -565,6 +569,20 @@
       0 0 0 1px rgba(255,255,255,0.08),
       0 0 0 6px rgba(0,0,0,0.35),
       0 6px 20px rgba(0,0,0,0.35);
+    will-change: transform, opacity;
+  }
+  /* Record-change animation — label shrinks away, new cover swaps in, label returns */
+  .tt-label[data-changing="on"]{
+    animation: recordSwap 640ms cubic-bezier(.45,.05,.35,1) both;
+  }
+  @keyframes recordSwap{
+    0%   { transform: translate(-50%,-50%) scale(1);    opacity:1; }
+    38%  { transform: translate(-50%,-50%) scale(0.32); opacity:0; }
+    62%  { transform: translate(-50%,-50%) scale(0.32); opacity:0; }
+    100% { transform: translate(-50%,-50%) scale(1);    opacity:1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .tt-label[data-changing="on"]{ animation:none; }
   }
   .tt-cover{
     position:absolute;inset:0;width:100%;height:100%;
@@ -1113,28 +1131,12 @@
   <div class="container">
     <div class="mast-row">
       <a href="#" class="mast-mark" aria-label="wui4sing1 — home">
-        <svg class="mark-svg" viewBox="0 0 200 120" fill="none" aria-hidden="true">
-          <!-- five staff lines with desert mound silhouettes -->
-          <g stroke="#24251C" stroke-width="2" stroke-linecap="round">
-            <line x1="8" y1="40" x2="192" y2="40"/>
-            <line x1="8" y1="54" x2="192" y2="54"/>
-            <line x1="8" y1="68" x2="192" y2="68"/>
-            <line x1="8" y1="82" x2="192" y2="82"/>
-            <line x1="8" y1="96" x2="192" y2="96"/>
-          </g>
-          <g fill="#24251C">
-            <path d="M 140 40 Q 158 38 170 40 L 192 40 L 192 44 L 140 44 Z"/>
-            <path d="M 110 54 Q 140 50 165 54 L 192 54 L 192 58 L 110 58 Z"/>
-            <path d="M 80 68 Q 120 62 155 68 L 192 68 L 192 72 L 80 72 Z"/>
-            <path d="M 45 82 Q 100 74 145 82 L 192 82 L 192 86 L 45 86 Z"/>
-            <path d="M 18 96 Q 85 88 135 96 L 192 96 L 192 100 L 18 100 Z"/>
-          </g>
-        </svg>
+        <img class="mark-img" src="brand_assets/transparent_logo.PNG" alt="" aria-hidden="true" />
         <span class="mark-label">wui<em>4</em>sing<em>1</em></span>
       </a>
       <nav class="mast-nav" aria-label="Primary">
         <a href="#vision"><span class="num">i</span>Vision</a>
-        <a href="#songs"><span class="num">ii</span>Our music</a>
+        <a href="#songs"><span class="num">ii</span>Music</a>
         <a href="#join"><span class="num">iii</span>Walk with us</a>
       </nav>
     </div>
@@ -1470,6 +1472,7 @@
   const fallback  = document.querySelector('.tt-cover-fallback');
   const fbChar    = document.querySelector('.tt-cover-fallback .fb-ch');
   const vinyl     = document.querySelector('.tt-vinyl');
+  const label     = document.querySelector('.tt-label');
   const arm       = document.querySelector('.tt-arm');
   const tracksEl  = $('deck-tracks');
   const titleEl   = $('track-title');
@@ -1529,14 +1532,20 @@
     });
   }
 
+  let swapTimers = [];
+  function clearSwapTimers(){
+    swapTimers.forEach(clearTimeout);
+    swapTimers = [];
+  }
+
   function select(i, autoplay){
+    const isInitial = !audio.src;
     current = (i + TRACKS.length) % TRACKS.length;
     const t = TRACKS[current];
     titleEl.textContent = t.title;
     subEl.textContent   = t.subtitle;
     metaEl.textContent  = t.meta;
     idxNow.textContent  = String(current+1).padStart(2,'0');
-    setCover(t);
     lnkSpot.href  = t.links.spotify;
     lnkApple.href = t.links.apple;
     lnkYT.href    = t.links.youtube;
@@ -1547,10 +1556,37 @@
     pbNow.textContent = '0:00';
     pbDur.textContent = '—:—';
 
-    updateActiveChip();
+    // Lift the arm and pause the platter while the record is changed
+    audio.pause();
+    playing = false;
+    btnPlay.dataset.playing = 'false';
+    btnPlay.setAttribute('aria-label','Play');
+    arm.dataset.engaged = 'off';
+    vinyl.dataset.spin = 'off';
 
-    if (autoplay) play();
-    else pause();
+    updateActiveChip();
+    clearSwapTimers();
+
+    if (isInitial){
+      // First render — no animation, just set the cover
+      setCover(t);
+      if (autoplay) play();
+      return;
+    }
+
+    // Retrigger the swap animation even if the attribute was already 'on'
+    label.dataset.changing = 'off';
+    void label.offsetWidth;
+    label.dataset.changing = 'on';
+
+    // Swap the cover while the label is fully scaled-down/invisible
+    swapTimers.push(setTimeout(() => { setCover(t); }, 250));
+
+    // When the label has finished returning, resume playback if requested
+    swapTimers.push(setTimeout(() => {
+      label.dataset.changing = 'off';
+      if (autoplay) play();
+    }, 640));
   }
 
   function play(){
