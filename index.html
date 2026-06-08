@@ -1080,7 +1080,7 @@
     background:linear-gradient(to bottom, transparent, rgba(75,81,52,0.05));
   }
   .foot-top{
-    display:grid;grid-template-columns:1fr 1fr 1fr;gap:60px;
+    display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:54px;
   }
   .foot-col h4{
     font-family:"Instrument Sans",sans-serif;font-weight:500;
@@ -1101,8 +1101,11 @@
   .foot-col a em{
     font-family:"Instrument Serif",serif;font-style:italic;font-size:18px;color:var(--ochre);margin-right:10px;display:inline-block;width:18px;
   }
-  @media (max-width:820px){
-    .foot-top{grid-template-columns:1fr;gap:44px}
+  @media (max-width:1024px){
+    .foot-top{grid-template-columns:1fr 1fr;gap:44px}
+  }
+  @media (max-width:560px){
+    .foot-top{grid-template-columns:1fr;gap:40px}
   }
 
   /* reveal-on-scroll */
@@ -1378,7 +1381,7 @@
 </section>
 
 <!-- FOOTER -->
-<footer class="foot">
+<footer class="foot" id="colophon">
   <div class="container">
     <div class="foot-top">
       <div class="foot-col">
@@ -1390,6 +1393,11 @@
         <h4>— Correspondence</h4>
         <a href="mailto:wui4sing1@gmail.com"><em>✎</em>wui4sing1@gmail.com</a>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLScgzDze-PT8BFgcQabRnV57ljNMPNFxLXchCxmZMxiikqQNMQ/viewform" target="_blank"><em>→</em>Donate &amp; order form</a>
+      </div>
+      <div class="foot-col">
+        <h4>— Studio Tools</h4>
+        <a href="tools/clapperboard.html"><em>❖</em>場記板 · Clapperboard</a>
+        <a href="tools/metronome.html"><em>♩</em>拍子機 · Metronome</a>
       </div>
       <div class="foot-col">
         <h4>— Elsewhere</h4>
