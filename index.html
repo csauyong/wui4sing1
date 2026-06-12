@@ -47,7 +47,12 @@
       radial-gradient(1000px 800px at 50% 120%, rgba(138,133,115,0.08), transparent 60%);
     background-attachment:fixed;
     position:relative;
-    overflow-x:hidden;
+    /* clip (not hidden) contains horizontal overflow so the page can't be
+       made wider than the screen (which let mobile browsers pinch-zoom out
+       below 1x). Unlike hidden, clip does not coerce overflow-y to auto, so
+       body stays out of being a scroll container and the verse-path
+       position:sticky keeps referencing the viewport. */
+    overflow-x:clip;
   }
   /* Grain overlay */
   body::before{
