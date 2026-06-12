@@ -27,11 +27,7 @@
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;background:var(--parchment);color:var(--ink)}
-  /* overflow-x:clip stops any descendant overflow from making the page wider
-     than the screen (which is what lets mobile browsers pinch-zoom out below
-     1x). clip (not hidden) avoids creating a scroll container, so position:sticky
-     still works. */
-  html{scroll-behavior:smooth;overflow-x:clip;max-width:100%}
+  html{scroll-behavior:smooth}
   body{
     font-family:"Fraunces", "Noto Serif TC", Georgia, serif;
     font-variation-settings:"opsz" 14, "SOFT" 50;
@@ -47,7 +43,12 @@
       radial-gradient(1000px 800px at 50% 120%, rgba(138,133,115,0.08), transparent 60%);
     background-attachment:fixed;
     position:relative;
-    overflow-x:hidden;
+    /* clip (not hidden) contains horizontal overflow so the page can't be
+       made wider than the screen (which let mobile browsers pinch-zoom out
+       below 1x). Unlike hidden, clip does not coerce overflow-y to auto, so
+       body stays out of being a scroll container and the verse-path
+       position:sticky keeps referencing the viewport. */
+    overflow-x:clip;
   }
   /* Grain overlay */
   body::before{
