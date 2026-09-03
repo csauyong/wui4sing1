@@ -115,14 +115,15 @@
     position:fixed;top:22px;right:40px;z-index:100;
     display:flex;align-items:baseline;gap:30px;
     padding:11px 22px;
-    /* Dark ground, echoing the ink play button, so a nav sitting permanently
-       over parchment reads as a floating control. On a parchment ground it
-       looked like it was clipping whatever label it passed over. */
-    background:var(--ink);
-    border:1px solid var(--ink);
+    /* A light card on a light page, so the edge and the elevation have to do
+       the separating: a crisp border rather than the faint --rule, plus a
+       layered shadow. Anything it passes over reads as being behind a card. */
+    background:var(--parchment);
+    border:1px solid rgba(36,37,28,0.30);
     box-shadow:
-      0 14px 32px -16px rgba(36,37,28,0.7),
-      0 2px 8px -4px rgba(36,37,28,0.35);
+      0 1px 0 rgba(255,255,255,0.6) inset,
+      0 18px 36px -18px rgba(36,37,28,0.55),
+      0 4px 12px -6px rgba(36,37,28,0.22);
     opacity:0;
     pointer-events:none;
     transform:translateY(-10px);
@@ -136,7 +137,7 @@
     white-space:nowrap;
     font-family:"Noto Serif TC",serif;font-weight:300;
     font-size:15px;letter-spacing:0.18em;
-    color:var(--sand);
+    color:var(--ink-soft);
     padding:2px 0;
     transition:color .35s cubic-bezier(.2,.7,.2,1);
   }
@@ -145,12 +146,10 @@
     background:var(--ochre);
     transition:width .45s cubic-bezier(.2,.7,.2,1);
   }
-  /* Ochre text on ink is only 4.05:1, so the current item is marked with full
-     brightness plus the ochre rule, which as a graphic only needs 3:1. */
-  .sitenav a:hover{color:var(--parchment)}
+  .sitenav a:hover{color:var(--ochre-deep)}
   .sitenav a:hover::after,
   .sitenav a[aria-current="true"]::after{width:100%}
-  .sitenav a[aria-current="true"]{color:var(--parchment)}
+  .sitenav a[aria-current="true"]{color:var(--ochre-deep)}
   .sitenav a:focus-visible{outline:2px solid var(--ochre);outline-offset:5px}
   @media (max-width:700px){
     /* Anchor from the left, not right:50%, so the pill can use the full width
@@ -1484,7 +1483,7 @@
   const siteNav    = document.getElementById('sitenav');
   const navLinks   = [...siteNav.querySelectorAll('a')];
   const navTargets = navLinks.map(a => document.querySelector(a.getAttribute('href')));
-  const heroEl     = document.querySelector('section.hero');
+  const verseEl    = document.querySelector('.verse-path');
 
   function setNav(shown){
     siteNav.dataset.shown = shown ? 'true' : 'false';
@@ -1493,11 +1492,10 @@
     else siteNav.setAttribute('inert','');
   }
   function navUpdate(){
-    // Hidden over the hero, which has its own top-right label and is meant to
-    // be read as one full-screen image, then shown for the rest of the page.
-    // It is opaque with a shadow, so passing over a section label reads as a
-    // floating control rather than as clipped text.
-    setNav(heroEl.getBoundingClientRect().bottom < 0);
+    // The hero and the verse path are one uninterrupted opening, so the nav
+    // stays out of both and appears once the verse has been scrolled past,
+    // which is exactly where the first named section begins.
+    setNav(verseEl.getBoundingClientRect().bottom < 0);
     // The current section is the last one whose top has passed 45% of the viewport.
     const line = window.innerHeight * 0.45;
     let active = -1;
