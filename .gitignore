@@ -22,3 +22,6 @@ build/
 !.dev.vars.example
 .env*
 !.env.example
+
+# Review screenshots (see CLAUDE.md screenshot workflow)
+temporary screenshots/
