@@ -1,0 +1,25 @@
+# Files kept in the repo but not uploaded to Cloudflare Workers assets.
+# wrangler.jsonc sets assets.directory to ".", so without this the whole repo
+# ships, including ~53 MB of masters the site never requests.
+
+# Audio masters. The site plays media/tracks/track-0N-highlight.m4a.
+*.wav
+
+# Cover masters (3000-4000px). The site uses media/tracks/*-cover-web.jpg.
+media/tracks/track-01-cover.jpg
+media/tracks/track-02-cover.jpg
+media/tracks/track-03-cover.png
+media/tracks/track-04-cover.jpg
+media/tracks/README.txt
+
+# Source banner (10667x6000). The share card is brand_assets/og-banner.jpg.
+brand_assets/banner.png
+brand_assets/vision.txt
+brand_assets/links.txt
+
+# Working files
+temporary screenshots/
+.idea/
+.claude/
+*.md
+.DS_Store

@@ -1,26 +1,35 @@
-TRACKS DIRECTORY — assets for the record-player music player
+TRACKS DIRECTORY - assets for the record-player music player
 
-Expected filenames (update index.html if you change them):
+The page loads the web derivatives, not the masters. Masters stay in the repo
+for archival but are excluded from the Cloudflare deploy by /.assetsignore.
 
-  1. 等候  (Lamentations 3:25–26 · 耶利米哀歌)
-     cover:  track-01-cover.jpg        ✓ uploaded
-     audio:  track-01-highlight.mp3    ← add a 30–60 sec highlight clip
+  played by the site          master
+  --------------------------  ------------------------------------
+  track-01-highlight.m4a      002 等後_2.wav
+  track-02-highlight.m4a      003 復甦_2.wav
+  track-03-highlight.m4a      004 詩想 (Day version)_2.wav
+  track-04-highlight.m4a      以馬忤斯 live demo ver2_2.wav
 
-  2. 復甦  (Ezekiel 37:7–10 · 以西結書)
-     cover:  track-02-cover.jpg        ✓ uploaded
-     audio:  track-02-highlight.mp3    ← add a 30–60 sec highlight clip
+  track-01-cover-web.jpg      track-01-cover.jpg
+  track-02-cover-web.jpg      track-02-cover.jpg
+  track-03-cover-web.jpg      track-03-cover.png
+  track-04-cover-web.jpg      track-04-cover.jpg
 
-  3. 光源  (Genesis 1:3 · 創世記)
-     cover:  track-03-cover.jpg        ✓ uploaded
-     audio:  track-03-highlight.mp3    ← add a 30–60 sec highlight clip
+Current running order (see TRACKS in index.html):
 
-  4. 以馬忤斯  (Luke 24:13–16 · 路加福音)
-     cover:  track-04-cover.jpg        ✓ uploaded
-     audio:  track-04-highlight.mp3    ← add a 30–60 sec highlight clip
+  1. 等後      Lamentations 3:25-26 · 耶利米哀歌
+  2. 復甦      Ezekiel 37:7-10 · 以西結書
+  3. 詩想      Psalm 119:54 · 詩篇
+  4. 以馬忤斯  Luke 24:13-16 · 路加福音
 
-Cover formats:  .jpg / .png  (square preferred, ≥ 1000×1000)
-Audio formats:  .mp3 / .m4a  (30–60 sec highlight)
+Regenerating a derivative:
 
-If an audio file is missing, the play button becomes inert but the
-rest of the player still works. If a cover is missing, a
-Chinese-character letterform placeholder is shown in its place.
+  cover  sips -Z 800 -s format jpeg -s formatOptions 78 MASTER --out track-0N-cover-web.jpg
+  audio  afconvert -f m4af -d aac -b 128000 MASTER track-0N-highlight.m4a
+
+Covers render into a ~210px circle, so 800px square is already retina-generous.
+Audio clips are 30-60 sec highlights.
+
+If an audio file is missing the play button becomes inert but the rest of the
+player still works. If a cover is missing, a Chinese-character letterform
+placeholder is shown in its place.

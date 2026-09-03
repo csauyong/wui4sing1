@@ -5,8 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>曠野回聲 — wui4sing1 · Cantonese Christian Music Ministry</title>
 <meta name="description" content="曠野回聲 wui4sing1 — 一個以廣東話原創詩歌為主的基督教音樂事工，於倫敦成立。A Cantonese Christian music ministry founded in London." />
+<link rel="canonical" href="https://wui4sing1.com/" />
 
+<!-- Share previews (Instagram / WhatsApp / Threads / Slack). og:image must be absolute. -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="曠野回聲 wui4sing1" />
+<meta property="og:url" content="https://wui4sing1.com/" />
+<meta property="og:title" content="曠野回聲 wui4sing1 — Cantonese Christian Music Ministry" />
+<meta property="og:description" content="一個以廣東話原創詩歌為主的基督教音樂事工，於倫敦成立。A Cantonese Christian music ministry founded in London." />
+<meta property="og:image" content="https://wui4sing1.com/brand_assets/og-banner.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="曠野回聲 wui4sing1 wordmark on parchment." />
+<meta property="og:locale" content="zh_HK" />
+<meta property="og:locale:alternate" content="en_GB" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="曠野回聲 wui4sing1 — Cantonese Christian Music Ministry" />
+<meta name="twitter:description" content="一個以廣東話原創詩歌為主的基督教音樂事工，於倫敦成立。A Cantonese Christian music ministry founded in London." />
+<meta name="twitter:image" content="https://wui4sing1.com/brand_assets/og-banner.jpg" />
+
+<meta name="theme-color" content="#EDEAE1" />
+<meta name="color-scheme" content="light" />
 <link rel="icon" href="brand_assets/logo.jpg" />
+<link rel="apple-touch-icon" href="brand_assets/logo.jpg" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Fraunces:ital,opsz,wght@0,9..144,200..700;1,9..144,200..700&family=Noto+Serif+TC:wght@200;300;400;500;600&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -24,6 +45,13 @@
     --ochre-deep:#8E5A26;
     --olive:#4B5134;
     --rule:rgba(36,37,28,0.14);
+    /* Section-head measure: the numeral column is fixed so I. / II. / III. all
+       put their titles on the same left edge, and so body copy below can align
+       to that same edge instead of floating in its own centred column. */
+    --num-col:96px;
+    --num-gap:60px;
+    --title-indent:calc(var(--num-col) + var(--num-gap) + 41px);
+    color-scheme:light;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;background:var(--parchment);color:var(--ink)}
@@ -71,6 +99,64 @@
   .container{max-width:1280px;margin:0 auto;padding:0 40px}
   @media (max-width:700px){.container{padding:0 22px}}
 
+  /* —— Skip link —— */
+  .skip-link{
+    position:fixed;left:24px;top:-100px;z-index:120;
+    padding:12px 20px;
+    background:var(--ink);color:var(--parchment);
+    font-family:"Instrument Sans",sans-serif;
+    font-size:11px;letter-spacing:0.18em;text-transform:uppercase;
+    transition:top .3s cubic-bezier(.2,.7,.2,1);
+  }
+  .skip-link:focus-visible{top:24px;outline:2px solid var(--ochre);outline-offset:3px}
+
+  /* —— Section nav (fades in once the hero is behind you) —— */
+  .sitenav{
+    position:fixed;top:22px;right:40px;z-index:100;
+    display:flex;align-items:baseline;gap:30px;
+    padding:11px 22px;
+    background:var(--parchment);
+    border:1px solid var(--rule);
+    /* Opaque ground plus a tinted shadow so the bar reads as floating above the
+       page. At 0.82 alpha it looked like it was clipping the copy underneath. */
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.5) inset,
+      0 12px 28px -14px rgba(36,37,28,0.45),
+      0 2px 8px -4px rgba(75,81,52,0.18);
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(-10px);
+    /* visibility is deliberately not transitioned; the hidden state is carried
+       by opacity plus pointer-events, and `inert` keeps it out of the tab order. */
+    transition:opacity .45s cubic-bezier(.2,.7,.2,1), transform .45s cubic-bezier(.2,.7,.2,1);
+  }
+  .sitenav[data-shown="true"]{opacity:1;pointer-events:auto;transform:none}
+  .sitenav a{
+    position:relative;
+    white-space:nowrap;
+    font-family:"Noto Serif TC",serif;font-weight:300;
+    font-size:15px;letter-spacing:0.18em;
+    color:var(--ink-soft);
+    padding:2px 0;
+    transition:color .35s cubic-bezier(.2,.7,.2,1);
+  }
+  .sitenav a::after{
+    content:"";position:absolute;left:0;bottom:-2px;height:1px;width:0;
+    background:var(--ochre);
+    transition:width .45s cubic-bezier(.2,.7,.2,1);
+  }
+  .sitenav a:hover{color:var(--ochre-deep)}
+  .sitenav a:hover::after,
+  .sitenav a[aria-current="true"]::after{width:100%}
+  .sitenav a[aria-current="true"]{color:var(--ochre-deep)}
+  .sitenav a:focus-visible{outline:2px solid var(--ochre);outline-offset:4px}
+  @media (max-width:700px){
+    /* Anchor from the left, not right:50%, so the pill can use the full width
+       instead of shrink-wrapping into half the viewport and wrapping labels. */
+    .sitenav{top:auto;bottom:18px;left:50%;right:auto;transform:translate(-50%,10px);gap:24px;padding:10px 20px}
+    .sitenav[data-shown="true"]{transform:translate(-50%,0)}
+  }
+
   /* —— Hero —— */
   section.hero{
     position:relative;
@@ -88,7 +174,20 @@
     font-size:11px;letter-spacing:0.32em;text-transform:uppercase;
     color:var(--stone);
   }
-  .hero-kicker .dot{width:6px;height:6px;background:var(--ochre);border-radius:50%}
+  .hero-kicker .dot{width:6px;height:6px;background:var(--ochre);border-radius:50%;flex:0 0 auto}
+  .hero-kicker .hk-meta{margin-left:auto}
+  /* Below 600px the two labels can't share a line; stack them and keep the
+     ochre dot on the first line rather than centred against a 3-line block. */
+  @media (max-width:600px){
+    .hero-kicker{
+      flex-wrap:wrap;align-items:flex-start;
+      gap:8px 12px;
+      font-size:10px;letter-spacing:0.22em;
+    }
+    .hero-kicker .dot{margin-top:5px}
+    .hero-kicker .hk-lede{flex:1 1 auto;min-width:0}
+    .hero-kicker .hk-meta{margin-left:0;flex:0 0 100%;padding-left:18px;color:var(--stone-light)}
+  }
   .hero-title{
     --title-fs: clamp(68px, 14vw, 220px);
     font-family:"Noto Serif TC","Fraunces",serif;
@@ -346,7 +445,7 @@
     position:relative;
   }
   .section-head{
-    display:grid;grid-template-columns:auto 1fr;gap:60px;align-items:baseline;
+    display:grid;grid-template-columns:var(--num-col) 1fr;gap:var(--num-gap);align-items:baseline;
     margin-bottom:80px;
   }
   .section-num{
@@ -388,10 +487,16 @@
   }
 
   /* —— Vision —— */
+  /* Body copy starts on the same left edge as the section title, so a section
+     reads as one column instead of a header and an unrelated centred block. */
   .vision-body{
     display:grid;
     grid-template-columns: minmax(0, 780px);
-    justify-content:center;
+    justify-content:start;
+    padding-left:var(--title-indent);
+  }
+  @media (max-width:820px){
+    .vision-body{padding-left:0}
   }
   .vision-zh{
     column-count: 2;
@@ -741,6 +846,8 @@
     cursor:pointer;
     overflow:hidden;
   }
+  /* The bar is a 3px hairline, so give the focus ring room to read. */
+  .pb-track:focus-visible{outline:2px solid var(--ochre);outline-offset:6px}
   .pb-fill{
     position:absolute;left:0;top:0;bottom:0;width:0%;
     background:linear-gradient(to right, var(--ochre-deep), var(--ochre));
@@ -856,10 +963,11 @@
   }
   .dp-btn{
     display:flex;align-items:center;gap:10px;
-    padding:14px 16px;
+    padding:14px 14px;
     border:1px solid var(--rule);
     font-family:"Instrument Sans",sans-serif;
     font-size:12px;letter-spacing:0.14em;text-transform:uppercase;
+    white-space:nowrap;
     color:var(--ink);
     background:rgba(255,250,238,0.4);
     transition: color .35s, border-color .35s, background .35s, transform .4s cubic-bezier(.2,.7,.2,1);
@@ -872,7 +980,7 @@
     transition:transform .7s cubic-bezier(.2,.7,.2,1);
   }
   .dp-btn:hover::before{transform:translateX(100%)}
-  .dp-btn .dp-name{flex:1;font-weight:500;letter-spacing:0.08em}
+  .dp-btn .dp-name{flex:1;font-weight:500;letter-spacing:0.04em}
   .dp-btn .dp-arrow{
     font-family:"Instrument Serif",serif;font-style:italic;
     font-size:16px;color:var(--ochre);
@@ -890,7 +998,11 @@
   .join-body{
     display:grid;
     grid-template-columns: minmax(0, 780px);
-    justify-content:center;
+    justify-content:start;
+    padding-left:var(--title-indent);
+  }
+  @media (max-width:820px){
+    .join-body{padding-left:0}
   }
   .join-lede p{
     font-family:"Noto Serif TC","Fraunces",serif;
@@ -1017,6 +1129,33 @@
   .reveal{opacity:0;transform:translateY(30px);transition:opacity 1s cubic-bezier(.2,.7,.2,1), transform 1s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
   .reveal.in{opacity:1;transform:none}
 
+  /* —— Reduced motion —— */
+  /* Everything that starts hidden and animates in must end up visible, so this
+     block asserts the final state rather than only cancelling the animation. */
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{
+      animation-duration:1ms !important;
+      animation-delay:0ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:1ms !important;
+      transition-delay:0ms !important;
+    }
+    .reveal,
+    .hero-title span,
+    .hero-release,
+    .vp-frag{opacity:1;transform:none}
+    .hero-title span[data-jp]::before,
+    .hero-title span[data-jp]::after{opacity:1}
+    .vp-logo .vp-line{transform:scaleX(1)}
+    .vp-logo .vp-key{opacity:1;transform:none}
+    /* The platter is decorative; a permanent spin is the worst offender here. */
+    .tt-vinyl,
+    .tt-vinyl[data-spin="on"]{animation:none}
+    .trk[data-active="true"] .trk-state .live-dot{animation:none;opacity:1}
+    .sitenav{transition:none}
+  }
+
   /* Vertical marker (left gutter) */
   .side-mark{
     position:fixed;left:24px;top:50%;transform:translateY(-50%) rotate(-90deg);
@@ -1033,15 +1172,23 @@
 </head>
 <body>
 
+<a class="skip-link" href="#vision">Skip to content</a>
+
 <div class="side-mark">wui<em>4</em>sing<em>1</em> &nbsp;·&nbsp; <em>est. mmxxv</em> &nbsp;·&nbsp; London</div>
+
+<nav class="sitenav" id="sitenav" aria-label="Sections">
+  <a href="#vision">異象</a>
+  <a href="#songs">音樂</a>
+  <a href="#join">同行</a>
+</nav>
 
 <!-- HERO -->
 <section class="hero">
   <div class="container">
     <div class="hero-kicker">
       <span class="dot"></span>
-      <span>A Cantonese Christian Music Ministry</span>
-      <span style="margin-left:auto;">Established 2025 · London</span>
+      <span class="hk-lede">A Cantonese Christian Music Ministry</span>
+      <span class="hk-meta">Established 2025 · London</span>
     </div>
 
     <h1 class="hero-title" aria-label="曠野回聲 (wui4sing1)">
@@ -1178,7 +1325,10 @@
 
         <!-- Playback -->
         <div class="deck-playback">
-          <div class="pb-track" id="pb-track">
+          <div class="pb-track" id="pb-track"
+               role="slider" tabindex="0"
+               aria-label="Seek within track"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0:00">
             <div class="pb-fill" id="pb-fill"></div>
             <div class="pb-marks">
               <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
@@ -1204,7 +1354,7 @@
         </div>
 
         <!-- Track chips -->
-        <div class="deck-tracks" id="deck-tracks" role="listbox" aria-label="All tracks"></div>
+        <div class="deck-tracks" id="deck-tracks" aria-label="All tracks"></div>
 
         <!-- Platform buttons -->
         <div class="deck-platforms">
@@ -1247,19 +1397,21 @@
 
     <div class="moments-stage">
       <figure class="m-item m-1 reveal" style="--d:0s">
-        <video src="media/clip-outdoor.mp4" autoplay muted loop playsinline preload="metadata"></video>
+        <video src="media/clip-outdoor.mp4" autoplay muted loop playsinline preload="metadata"
+               aria-label="Driving through an English village on the way to a retreat."></video>
       </figure>
       <figure class="m-item m-2 reveal" style="--d:.18s">
-        <img src="media/PICT0056.JPG" alt="" loading="lazy"/>
+        <img src="media/PICT0056.JPG" alt="Two members of the team backstage in a venue before a set." loading="lazy"/>
       </figure>
       <figure class="m-item m-3 reveal" style="--d:.32s">
-        <video src="media/clip-stage.mp4" autoplay muted loop playsinline preload="metadata"></video>
+        <video src="media/clip-stage.mp4" autoplay muted loop playsinline preload="metadata"
+               aria-label="The band leading worship on stage, keyboard and vocalists under red curtain light."></video>
       </figure>
       <figure class="m-item m-4 reveal" style="--d:.46s">
-        <img src="media/IMG_0731.JPG" alt="" loading="lazy"/>
+        <img src="media/IMG_0731.JPG" alt="The team crowded into a wide-angle group shot outdoors." loading="lazy"/>
       </figure>
       <figure class="m-item m-5 reveal" style="--d:.60s">
-        <img src="media/IMG_0730.JPG" alt="" loading="lazy"/>
+        <img src="media/IMG_0730.JPG" alt="The team on a green hillside below a stone tower." loading="lazy"/>
       </figure>
     </div>
 
@@ -1309,13 +1461,64 @@
 </footer>
 
 <script>
-  // Scroll-reveal
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){e.target.classList.add('in'); io.unobserve(e.target)}
+  // —— Scroll-reveal ——
+  // Position-based rather than IntersectionObserver. An observer only fires when
+  // an element actually occupies an observed frame, so a fast flick, a restored
+  // scroll position, or an in-page anchor jump could skip a section entirely and
+  // strand it at opacity 0 for the rest of the visit. Testing position instead
+  // covers "entering from below" and "already scrolled past" with one condition.
+  let pendingReveals = [...document.querySelectorAll('.reveal')];
+  function revealSweep(){
+    if (!pendingReveals.length) return;
+    const trigger = window.innerHeight * 0.92;
+    pendingReveals = pendingReveals.filter(el => {
+      if (el.getBoundingClientRect().top >= trigger) return true;
+      el.classList.add('in');
+      return false;
     });
-  }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
-  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  }
+
+  // —— Section nav ——
+  const siteNav    = document.getElementById('sitenav');
+  const navLinks   = [...siteNav.querySelectorAll('a')];
+  const navTargets = navLinks.map(a => document.querySelector(a.getAttribute('href')));
+  const heroEl     = document.querySelector('section.hero');
+
+  // Shown once the hero is behind you, then hidden while you scroll down and
+  // brought back on scroll up or when you stop. It floats over full-bleed
+  // sections, so keeping it out of the way while reading matters.
+  let lastNavY = window.scrollY;
+  let navIdleTimer = null;
+  function setNav(shown){
+    siteNav.dataset.shown = shown ? 'true' : 'false';
+    // Keep a hidden nav out of the tab order without transitioning visibility.
+    if (shown) siteNav.removeAttribute('inert');
+    else siteNav.setAttribute('inert','');
+  }
+  function navUpdate(){
+    const y = window.scrollY;
+    const pastHero = heroEl.getBoundingClientRect().bottom < 0;
+    if (!pastHero){
+      setNav(false);
+    } else if (y < lastNavY - 2){
+      setNav(true);
+    } else if (y > lastNavY + 2){
+      setNav(false);
+    }
+    if (Math.abs(y - lastNavY) > 2) lastNavY = y;
+    clearTimeout(navIdleTimer);
+    navIdleTimer = setTimeout(() => {
+      if (heroEl.getBoundingClientRect().bottom < 0) setNav(true);
+    }, 220);
+    // The current section is the last one whose top has passed 45% of the viewport.
+    const line = window.innerHeight * 0.45;
+    let active = -1;
+    navTargets.forEach((el, i) => { if (el && el.getBoundingClientRect().top <= line) active = i; });
+    navLinks.forEach((a, i) => {
+      if (i === active) a.setAttribute('aria-current','true');
+      else a.removeAttribute('aria-current');
+    });
+  }
 
   // —— Verse-path scroll staging ——
   // Each key reveals from the nearest (bottom) toward the horizon, carrying
@@ -1342,14 +1545,25 @@
       frag.classList.toggle('in', p >= at);
     });
   }
+  function frameUpdate(){ vpUpdate(); revealSweep(); navUpdate(); }
+
   let vpQueued = false;
   window.addEventListener('scroll', () => {
+    // Revealing content and the nav state run synchronously. Both only read
+    // already-settled scroll layout, so they are cheap, and gating them on
+    // requestAnimationFrame would mean content stays hidden whenever rAF is
+    // throttled. The verse path animates, so that one stays rAF-throttled.
+    revealSweep();
+    navUpdate();
     if (vpQueued) return;
     vpQueued = true;
     requestAnimationFrame(() => { vpUpdate(); vpQueued = false; });
   }, {passive:true});
-  window.addEventListener('resize', vpUpdate);
-  vpUpdate();
+
+  window.addEventListener('resize', frameUpdate);
+  // Sweep again once the browser has settled on a restored scroll position.
+  window.addEventListener('load', frameUpdate);
+  frameUpdate();
 
   // —— Record-player music player ——
   const PLATFORM_LINKS = {
@@ -1363,8 +1577,8 @@
       title: '等後',
       subtitle: 'Wait on the Lord.',
       meta: 'Lamentations 3:25–26 · 耶利米哀歌',
-      cover: 'media/tracks/track-01-cover.jpg',
-      audio: 'media/tracks/002 等後_2.wav',
+      cover: 'media/tracks/track-01-cover-web.jpg',
+      audio: 'media/tracks/track-01-highlight.m4a',
       fallbackChar: '等',
       links: PLATFORM_LINKS
     },
@@ -1373,8 +1587,8 @@
       title: '復甦',
       subtitle: 'Breath into dry bones.',
       meta: 'Ezekiel 37:7–10 · 以西結書',
-      cover: 'media/tracks/track-02-cover.jpg',
-      audio: 'media/tracks/003 復甦_2.wav',
+      cover: 'media/tracks/track-02-cover-web.jpg',
+      audio: 'media/tracks/track-02-highlight.m4a',
       fallbackChar: '復',
       links: PLATFORM_LINKS
     },
@@ -1383,8 +1597,8 @@
       title: '詩想',
       subtitle: 'Meditate on God\'s words.',
       meta: 'Psalm 119:54 · 詩篇',
-      cover: 'media/tracks/track-03-cover.png',
-      audio: 'media/tracks/004 詩想 (Day version)_2.wav',
+      cover: 'media/tracks/track-03-cover-web.jpg',
+      audio: 'media/tracks/track-03-highlight.m4a',
       fallbackChar: '詩',
       links: PLATFORM_LINKS
     },
@@ -1393,8 +1607,8 @@
       title: '以馬忤斯',
       subtitle: 'On the road to Emmaus.',
       meta: 'Luke 24:13–16 · 路加福音',
-      cover: 'media/tracks/track-04-cover.jpg',
-      audio: 'media/tracks/以馬忤斯 live demo ver2_2.wav',
+      cover: 'media/tracks/track-04-cover-web.jpg',
+      audio: 'media/tracks/track-04-highlight.m4a',
       fallbackChar: '以',
       links: PLATFORM_LINKS
     }
@@ -1440,7 +1654,7 @@
   TRACKS.forEach((t, i) => {
     const btn = document.createElement('button');
     btn.className = 'trk';
-    btn.setAttribute('role','option');
+    btn.type = 'button';
     btn.dataset.idx = i;
     btn.innerHTML = `
       <span class="trk-n">${t.n}</span>
@@ -1466,6 +1680,10 @@
     [...tracksEl.children].forEach((el, i) => {
       const active = i === current;
       el.dataset.active = active ? 'true' : 'false';
+      // aria-current on a real button, rather than role="option" on one, which
+      // would strip the button semantics and promise a listbox we do not build.
+      if (active) el.setAttribute('aria-current','true');
+      else el.removeAttribute('aria-current');
       const lbl = el.querySelector('.lbl');
       if (lbl) lbl.textContent = active ? (playing ? 'Now playing' : 'Cued') : 'Select';
     });
@@ -1494,6 +1712,8 @@
     pbFill.style.width = '0%';
     pbNow.textContent = '0:00';
     pbDur.textContent = '—:—';
+    pbTrack.setAttribute('aria-valuenow', '0');
+    pbTrack.setAttribute('aria-valuetext', 'Not loaded');
 
     // Lift the arm and pause the platter while the record is changed
     audio.pause();
@@ -1564,30 +1784,52 @@
   btnPrev.addEventListener('click', () => { select(current - 1, playing); });
   btnNext.addEventListener('click', () => { select(current + 1, playing); });
 
-  audio.addEventListener('loadedmetadata', () => {
-    pbDur.textContent = fmt(audio.duration);
-  });
-  audio.addEventListener('timeupdate', () => {
-    if (!isFinite(audio.duration) || !audio.duration) return;
-    const pct = (audio.currentTime / audio.duration) * 100;
+  const hasDuration = () => isFinite(audio.duration) && audio.duration > 0;
+
+  function updateProgress(){
+    const pct = hasDuration() ? (audio.currentTime / audio.duration) * 100 : 0;
     pbFill.style.width = pct + '%';
     pbNow.textContent = fmt(audio.currentTime);
+    pbTrack.setAttribute('aria-valuenow', Math.round(pct));
+    pbTrack.setAttribute('aria-valuetext',
+      hasDuration() ? fmt(audio.currentTime) + ' of ' + fmt(audio.duration) : 'Not loaded');
+  }
+
+  function seekToRatio(ratio){
+    if (!hasDuration()) return;
+    audio.currentTime = Math.min(1, Math.max(0, ratio)) * audio.duration;
+    updateProgress();
+  }
+  function nudge(seconds){
+    if (!hasDuration()) return;
+    audio.currentTime = Math.min(audio.duration, Math.max(0, audio.currentTime + seconds));
+    updateProgress();
+  }
+
+  audio.addEventListener('loadedmetadata', () => {
+    pbDur.textContent = fmt(audio.duration);
+    updateProgress();
   });
+  audio.addEventListener('timeupdate', updateProgress);
   audio.addEventListener('ended', () => { select(current + 1, true); });
 
   pbTrack.addEventListener('click', (e) => {
-    if (!isFinite(audio.duration) || !audio.duration) return;
     const rect = pbTrack.getBoundingClientRect();
-    const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-    audio.currentTime = ratio * audio.duration;
-    pbFill.style.width = (ratio * 100) + '%';
+    seekToRatio((e.clientX - rect.left) / rect.width);
   });
 
-  // Keyboard support inside the player
-  document.querySelector('.player').addEventListener('keydown', (e) => {
-    if (e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); playing ? pause() : play(); }
-    if (e.key === 'ArrowRight') { e.preventDefault(); select(current + 1, playing); }
-    if (e.key === 'ArrowLeft')  { e.preventDefault(); select(current - 1, playing); }
+  // The seek bar is a real slider, so it owns its own keys. Buttons keep their
+  // native Enter/Space, which the old player-wide Space handler used to swallow.
+  pbTrack.addEventListener('keydown', (e) => {
+    switch (e.key) {
+      case 'ArrowRight': case 'ArrowUp':   e.preventDefault(); nudge(5); break;
+      case 'ArrowLeft':  case 'ArrowDown': e.preventDefault(); nudge(-5); break;
+      case 'PageUp':     e.preventDefault(); nudge(10); break;
+      case 'PageDown':   e.preventDefault(); nudge(-10); break;
+      case 'Home':       e.preventDefault(); seekToRatio(0); break;
+      case 'End':        e.preventDefault(); seekToRatio(1); break;
+      case ' ': case 'Spacebar': e.preventDefault(); playing ? pause() : play(); break;
+    }
   });
 
   // Init
